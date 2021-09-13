@@ -11,6 +11,12 @@ public:
 	Hand();
 	void dealToHand(Deck& deck);
 	void setFaceValuePoints();
-	void setDoubletonPoints();
+	void setTonPoints();
 	void setHandValue();
+	int getHandValue() {
+		return handValue;
+	}
+	vector<Card> getCardsInHand() {
+		return cardsInHand;
+	}
 };

@@ -18,7 +18,7 @@ void Hand::setFaceValuePoints() {
 	}
 }
 
-void Hand::setDoubletonPoints() {
+void Hand::setTonPoints() {
 	for (unsigned int i = 0; i < 4; i++) {
 		unsigned int count = 0;
 		for (unsigned int j = 0; j < 13; j++) {
@@ -26,13 +26,24 @@ void Hand::setDoubletonPoints() {
 				count++;
 			}
 		}
-		if (count == 2) {
-			handValue++;
+		switch (count) {
+			case 0: {
+				handValue += 5;
+				break;
+			}
+			case 1: {
+				handValue += 2;
+				break;
+			}
+			case 2: {
+				handValue++;
+				break;
+			}
 		}
 	}
 }
 
 void Hand::setHandValue() {
 	this->setFaceValuePoints();
-	this->setDoubletonPoints();
+	this->setTonPoints();
 }

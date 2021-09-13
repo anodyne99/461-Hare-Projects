@@ -14,9 +14,11 @@ void shuffleDeck(Deck& deck) {
 
 
 int run = 0;
+int pointSum;
+int passTally, partScoreTally, gameTally, smallSlamTally, grandSlamTally;
 map<int, char> suits = { {0, 'S'}, {1, 'H'}, {2, 'C'}, {3, 'D'} };
-Hand playerHand;
-Hand partnerHand;
+Hand playerHand, partnerHand;
+
 
 int main() {
 	Deck defaultDeck;
@@ -28,6 +30,7 @@ int main() {
 		shuffleDeck(deckToTest);
 		partnerHand.dealToHand(deckToTest);
 		partnerHand.setHandValue();
+		int pointSum = (playerHand.getHandValue() + partnerHand.getHandValue());
 		run++;
 	} while (run < 500);
 };
