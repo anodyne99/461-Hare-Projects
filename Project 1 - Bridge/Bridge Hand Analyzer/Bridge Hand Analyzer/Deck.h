@@ -9,6 +9,7 @@ public:
 	Deck(deque<Card> updatedDeck);
 	deque<Card> cardsInPlay;
 	deque<Card> getDeck();
+	void shuffleDeck();
 	Card getCard(int cardToPull){
 		return this->cardsInPlay[cardToPull];
 	}

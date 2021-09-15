@@ -13,6 +13,7 @@ public:
 	void setFaceValuePoints();
 	void setTonPoints();
 	void setHandValue();
+	void emptyHand();
 	int getHandValue() {
 		return handValue;
 	}

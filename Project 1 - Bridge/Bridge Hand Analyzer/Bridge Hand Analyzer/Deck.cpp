@@ -7,6 +7,10 @@ Deck::Deck() {
 	}
 }
 
+void Deck::shuffleDeck() {
+	random_shuffle(this->cardsInPlay.begin(), this->cardsInPlay.end());
+}
+
 Deck::Deck(deque<Card> updatedDeck) {
 	cardsInPlay = updatedDeck;
 }

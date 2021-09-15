@@ -12,6 +12,11 @@ void Hand::dealToHand(Deck& deck) {
 	}
 }
 
+void Hand::emptyHand() {
+	this->cardsInHand.clear();
+	this->handValue = 0;
+}
+
 void Hand::setFaceValuePoints() {
 	for (unsigned int i = 0; i < 13; i++) {
 		handValue += this->cardsInHand[i].getCardValue();
