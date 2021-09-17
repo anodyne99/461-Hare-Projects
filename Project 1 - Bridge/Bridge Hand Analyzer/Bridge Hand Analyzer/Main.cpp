@@ -5,9 +5,6 @@
 #include "Deck.h"
 #include "Card.h"
 #include "Hand.h"
-#include <cctype>
-#include <ctime>
-#include <map>
 using namespace std;
 
 int tests;
