@@ -13,7 +13,7 @@ using namespace std;
 int tests;
 char userEntry;
 int pointSum;
-int passTally = 0, partScoreTally = 0, gameTally = 0, smallSlamTally = 0, grandSlamTally = 0;
+int passTally, partScoreTally, gameTally, smallSlamTally, grandSlamTally;
 map<int, char> suits = { {0, 'S'}, {1, 'H'}, {2, 'C'}, {3, 'D'} };
 map<int, char> faceCards = { {12, 'K'} , {11, 'Q'}, {10, 'J'}, {0, 'A'} };
 Hand playerHand, partnerHand;
@@ -65,9 +65,9 @@ float bestOutcomePercentageOutput(float tally) {
 }
 
 int main() {
+	srand(unsigned(time(0))); // Initial seed generation for random_shuffle functionality
 	do {
 		gameCleanup();
-		srand(unsigned(time(0)));
 		Deck defaultDeck;
 		defaultDeck.shuffleDeck();
 		playerHand.dealToHand(defaultDeck);
