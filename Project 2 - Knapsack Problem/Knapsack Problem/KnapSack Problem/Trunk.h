@@ -10,6 +10,7 @@ private:
 	double fitness;
 	double totalWeight;
 public:
+	Trunk(deque<Item> items);
 	void overWeightCheck();
 	deque<Item> getItemsPacked(){
 		return this->itemsPacked;

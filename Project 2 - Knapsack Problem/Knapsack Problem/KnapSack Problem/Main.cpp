@@ -19,6 +19,16 @@ deque<Trunk> trunkList;
 float mutationRate = (1 / 10000);
 
 
+//Breeding selection
+deque<Trunk> breedingSelection(int size) {
+	deque<Trunk> nextGeneration;
+	while (nextGeneration.size() < size) {
+
+	}
+	return nextGeneration;
+}
+
+
 //Function to output 4 generation results to a results file.
 void resultsOutputToFile(ofstream &output, double max, double avg, int size) {
 
@@ -39,8 +49,10 @@ void noChangeChecker(double prev, double curr) {
 
 
 //initial population creation for each test
-void basePopulation() {
-	
+void initialPopulation(Trunk emptyTrunk) {
+	for (unsigned int i = 0; i < 20; i++) {
+
+	}
 }
 
 
@@ -77,9 +89,12 @@ int main() {
 		cout <<  fullItemList.at(i).getItemWeight() << " " << fullItemList.at(i).getItemUtility() << endl;
 	}
 	for (int x = 0; x < 4; x++) {
+		srand(unsigned(time(0))); //Random seeding
 		maxPop = popSizes[x];
 		for (int i = 0; i < maxPop; i++) {
-			basePopulation();
+			Trunk generatedTrunk(fullItemList);
+			initialPopulation(generatedTrunk);
+			trunkList.push_back(generatedTrunk);
 		}
 	}
 	return 0;

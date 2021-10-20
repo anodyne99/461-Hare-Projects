@@ -1,5 +1,9 @@
 #include "Trunk.h"
 
+Trunk::Trunk(deque<Item> items) {
+	itemsPacked = items;
+}
+
 void Trunk::setFitness(deque<Item> items) {
 	double totalFitness = 0;
 	for (int i = 0; i < items.size(); i++) {
