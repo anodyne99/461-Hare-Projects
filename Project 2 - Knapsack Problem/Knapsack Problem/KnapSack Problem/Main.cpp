@@ -50,6 +50,7 @@ void noChangeChecker(double prev, double curr) {
 
 //initial population creation for each test
 deque<Item> initialPopulation(deque<Item> items) {
+
 	int randomIndex;
 	for (unsigned int i = 0; i < 20; i++) {
 		randomIndex = (rand() % 400);
@@ -88,16 +89,18 @@ int main() {
 		}
 	} while (genes.fail());
 	fullItemList = itemListGeneration(genes);
-	for (unsigned int i = 0; i < 20; i++) {
-		cout <<  fullItemList.at(i).getItemWeight() << " " << fullItemList.at(i).getItemUtility() << endl;
-	}
+	//Wasn't required but I felt like adding multiple trials.
 	for (int x = 0; x < 4; x++) {
-		srand(unsigned(time(0))); //Random seeding
+		srand(unsigned(time(0))); //Random seeding changes with each trial
 		maxPop = popSizes[x];
 		for (int i = 0; i < maxPop; i++) {
+			// TODO: See if you can't find a way to encapsulate this into the population function
 			Trunk generatedTrunk;
 			generatedTrunk.setItemsPacked(initialPopulation(fullItemList));
 			trunkList.push_back(generatedTrunk);
+		}
+		while (noChangeCounter < 10) {
+
 		}
 		trunkList.clear();
 	}
