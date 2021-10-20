@@ -19,6 +19,12 @@ deque<Trunk> trunkList;
 float mutationRate = (1 / 10000);
 
 
+//Function to output 4 generation results to a results file.
+void resultsOutputToFile(ofstream &output, double max, double avg, int size) {
+
+}
+
+
 //Checker function to see if end loop conditions are being met
 //Should stop generating once the last 10 generations' average fitness
 //doesn't increase more than 1 percent
