@@ -19,16 +19,6 @@ deque<Trunk> trunkList;
 float mutationRate = (1 / 10000);
 
 
-//Checks if input file exists
-bool inputFileExists(ifstream &inputFile) {
-	if (inputFile.fail()) {
-		return false;
-	}
-	else {
-		return true;
-	}
-}
-
 //Function to output 4 generation results to a results file.
 void resultsOutputToFile(ofstream &output, double max, double avg, int size) {
 
@@ -49,8 +39,8 @@ void noChangeChecker(double prev, double curr) {
 
 
 //initial population creation for each test
-void trunkGeneration() {
-
+void basePopulation() {
+	
 }
 
 
@@ -73,20 +63,24 @@ int main() {
 		cout << "Enter file name for input data for initial generation: \n";
 		cin >> inputFileName;
 		genes.open(inputFileName);
-		if (inputFileExists(genes)) {
-			cout << "\n Reading file: " << inputFileName << endl;
-		}
-		else {
+		if (genes.fail()) {
 			cout << "Error! File " << inputFileName << " not found.\n";
 			cout << "Please check syntax and try again.\n\n";
 			inputFileName.clear();
 		}
-	} while (!inputFileExists(genes));
+		else {
+			cout << "\n Reading file: " << inputFileName << endl;
+		}
+	} while (genes.fail());
 	fullItemList = itemListGeneration(genes);
+	for (unsigned int i = 0; i < 20; i++) {
+		cout <<  fullItemList.at(i).getItemWeight() << " " << fullItemList.at(i).getItemUtility() << endl;
+	}
 	for (int x = 0; x < 4; x++) {
 		maxPop = popSizes[x];
-
+		for (int i = 0; i < maxPop; i++) {
+			basePopulation();
+		}
 	}
-
 	return 0;
 }
