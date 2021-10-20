@@ -6,10 +6,10 @@
 #include "Trunk.h"
 
 
-
 int popSizes[4] = { 1000, 2000, 5000, 10000 };
 int maxPop;
 int noChangeCounter = 0;
+string inputFileName = "";
 double prevGenAvgFitness, currentGenAvgFitness;
 double maxFitness;
 ifstream genes;
@@ -18,6 +18,16 @@ deque<Item> fullItemList;
 deque<Trunk> trunkList;
 float mutationRate = (1 / 10000);
 
+
+//Checks if input file exists
+bool inputFileExists(ifstream &inputFile) {
+	if (inputFile.fail()) {
+		return false;
+	}
+	else {
+		return true;
+	}
+}
 
 //Function to output 4 generation results to a results file.
 void resultsOutputToFile(ofstream &output, double max, double avg, int size) {
@@ -59,7 +69,19 @@ deque<Item> itemListGeneration(ifstream &inputStream) {
 
 
 int main() {
-	genes.open("Program2Input.txt");
+	do {
+		cout << "Enter file name for input data for initial generation: \n";
+		cin >> inputFileName;
+		genes.open(inputFileName);
+		if (inputFileExists(genes)) {
+			cout << "\n Reading file: " << inputFileName << endl;
+		}
+		else {
+			cout << "Error! File " << inputFileName << " not found.\n";
+			cout << "Please check syntax and try again.\n\n";
+			inputFileName.clear();
+		}
+	} while (!inputFileExists(genes));
 	fullItemList = itemListGeneration(genes);
 	for (int x = 0; x < 4; x++) {
 		maxPop = popSizes[x];

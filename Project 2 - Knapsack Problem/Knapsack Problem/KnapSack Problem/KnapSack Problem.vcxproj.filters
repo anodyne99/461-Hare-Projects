@@ -37,7 +37,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\..\..\..\..\..\Downloads\Program2Input.txt">
+    <Text Include="Program2Input.txt">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>
