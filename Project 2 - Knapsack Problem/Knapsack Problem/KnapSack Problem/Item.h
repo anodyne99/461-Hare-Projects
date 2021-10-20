@@ -18,12 +18,6 @@ public:
 	bool getPacked() {
 		return this->packed;
 	}
-	void setMutation() {
-		if (getPacked()) {
-			this->packed = false;
-		}
-		else {
-			this->packed = true;
-		}
-	}
+	void setMutation();
+	void setPacked();
 };

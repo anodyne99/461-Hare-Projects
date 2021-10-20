@@ -49,10 +49,13 @@ void noChangeChecker(double prev, double curr) {
 
 
 //initial population creation for each test
-void initialPopulation(Trunk emptyTrunk) {
+deque<Item> initialPopulation(deque<Item> items) {
+	int randomIndex;
 	for (unsigned int i = 0; i < 20; i++) {
-
+		randomIndex = (rand() % 400);
+		items[randomIndex].setPacked();
 	}
+	return items;
 }
 
 
@@ -92,10 +95,11 @@ int main() {
 		srand(unsigned(time(0))); //Random seeding
 		maxPop = popSizes[x];
 		for (int i = 0; i < maxPop; i++) {
-			Trunk generatedTrunk(fullItemList);
-			initialPopulation(generatedTrunk);
+			Trunk generatedTrunk;
+			generatedTrunk.setItemsPacked(initialPopulation(fullItemList));
 			trunkList.push_back(generatedTrunk);
 		}
+		trunkList.clear();
 	}
 	return 0;
 }
