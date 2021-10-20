@@ -6,11 +6,39 @@
 #include "Trunk.h"
 
 
-Trunk trunkGeneration() {
+
+int popSizes[4] = { 1000, 2000, 5000, 10000 };
+int maxPop;
+int noChangeCounter = 0;
+double prevGenAvgFitness, currentGenAvgFitness;
+double maxFitness;
+ifstream genes;
+ofstream results;
+deque<Item> fullItemList;
+deque<Trunk> trunkList;
+float mutationRate = (1 / 10000);
+
+
+//Checker function to see if end loop conditions are being met
+//Should stop generating once the last 10 generations' average fitness
+//doesn't increase more than 1 percent
+void noChangeChecker(double prev, double curr) {
+	if (abs((curr - prev) / prev) < .01) {
+		noChangeCounter++;
+	}
+	else {
+		noChangeCounter = 0;
+	}
+}
+
+
+//initial population creation for each test
+void trunkGeneration() {
 
 }
 
 
+// initially creates the full item list from input txt
 deque<Item> itemListGeneration(ifstream &inputStream) {
 	double utility;
 	double weight;
@@ -24,19 +52,13 @@ deque<Item> itemListGeneration(ifstream &inputStream) {
 }
 
 
-int generations = 0;
-double prevGenFitness, currentGenFitness;
-ifstream genes;
-deque<Item> fullItemList;
-deque<Trunk> trunkList;
-
-
 int main() {
 	genes.open("Program2Input.txt");
 	fullItemList = itemListGeneration(genes);
-	do {
+	for (int x = 0; x < 4; x++) {
+		maxPop = popSizes[x];
 
-	} while ((currentGenFitness - prevGenFitness) < 1);
-	for (int i = 0; i < 1000; i++);
+	}
+
 	return 0;
 }

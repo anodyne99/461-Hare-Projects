@@ -9,7 +9,6 @@ private:
 	deque<Item> itemsPacked;
 	double fitness;
 	double totalWeight;
-	bool valid = false;
 public:
 	void overWeightCheck();
 	deque<Item> getItemsPacked(){
@@ -17,9 +16,6 @@ public:
 	}
 	void setItemsPacked(deque<Item> items) {
 		items = itemsPacked;
-	}
-	void setValidFlag() {
-		this->valid = true;
 	}
 	void setWeight(deque<Item> items);
 	double getWeight() {

@@ -17,7 +17,7 @@ void Trunk::setWeight(deque<Item> items) {
 };
 
 void Trunk::overWeightCheck() {
-	if (this->getWeight() < 400) {
-		this->setValidFlag();
+	if (this->getWeight() > 500) {
+		this->fitness = 1;
 	}
 }
