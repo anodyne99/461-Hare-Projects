@@ -103,15 +103,6 @@ int main() {
 			generatedTrunk.setFitness();
 			trunkList.push_back(generatedTrunk);
 		}
-		for (int j = 0; j < 50; j++) {
-			int count = 0;
-			for (int k = 0; k < 400; k++) {
-				if (trunkList[j].getItemsPacked().at(k).getPacked()) {
-					count++;
-				}
-			}
-			cout << count << endl;
-		}
 		while (noChangeCounter < 10) {
 
 		}
