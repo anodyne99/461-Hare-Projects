@@ -50,11 +50,14 @@ void noChangeChecker(double prev, double curr) {
 
 //initial population creation for each test
 deque<Item> initialPopulation(deque<Item> items) {
-
+	int successfulPack = 0; // to help with the occasional attempt to double-pack an item
 	int randomIndex;
-	for (unsigned int i = 0; i < 20; i++) {
+	while (successfulPack != 20) {
 		randomIndex = (rand() % 400);
-		items[randomIndex].setPacked();
+		if (!items[randomIndex].getPacked()) {
+			items[randomIndex].setPacked();
+			successfulPack++;
+		}
 	}
 	return items;
 }
@@ -97,7 +100,17 @@ int main() {
 			// TODO: See if you can't find a way to encapsulate this into the population function
 			Trunk generatedTrunk;
 			generatedTrunk.setItemsPacked(initialPopulation(fullItemList));
+			generatedTrunk.setFitness();
 			trunkList.push_back(generatedTrunk);
+		}
+		for (int j = 0; j < 50; j++) {
+			int count = 0;
+			for (int k = 0; k < 400; k++) {
+				if (trunkList[j].getItemsPacked().at(k).getPacked()) {
+					count++;
+				}
+			}
+			cout << count << endl;
 		}
 		while (noChangeCounter < 10) {
 

@@ -10,18 +10,19 @@ private:
 	double fitness;
 	double totalWeight;
 public:
+	Trunk();
 	void overWeightCheck();
 	deque<Item> getItemsPacked(){
 		return this->itemsPacked;
 	}
 	void setItemsPacked(deque<Item> items) {
-		items = itemsPacked;
+		itemsPacked = items;
 	}
 	void setWeight(deque<Item> items);
 	double getWeight() {
 		return this->totalWeight;
 	}
-	void setFitness(deque<Item> items);
+	void setFitness();
 	double getFitness() {
 		return this->fitness;
 	}
