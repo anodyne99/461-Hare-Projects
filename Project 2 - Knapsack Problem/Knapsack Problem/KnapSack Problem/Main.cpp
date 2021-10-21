@@ -21,8 +21,18 @@ float mutationRate = (1 / 10000);
 
 
 // Handles crossover process
-void crossover(Trunk a, Trunk b) {
+void crossover(Trunk a, Trunk b, deque<Trunk> nextGen) {
 
+}
+
+
+double averageFitnessCalculation(deque<Trunk> generated) {
+	int size = generated.size();
+	double totalTally = 0.0;
+	for (int i = 0; i < size; i++) {
+		totalTally += generated[i].getFitness();
+	}
+	return (totalTally / size);
 }
 
 
@@ -31,41 +41,42 @@ deque<Norms> normalization(deque<Trunk> thisGeneration) {
 	deque<Norms> distributedNorms;
 	int size = thisGeneration.size(); // Removes overhead of constant size calls;
 	double squaredSum = 0;
-	for (unsigned int i = 0; i <= 1000; (i + 100)) {
+	for (int i = 0; i <= 1000; (i + 100)) {
 		Norms newNorm;
 		newNorm.setRange(i);
 		distributedNorms.push_back(newNorm);
 	}
-	for (unsigned int i = 0; i < size; i++) {
-		double fitness = thisGeneration.at(i).getFitness(); // Most verbose but fasted run time
+	for (int i = 0; i < size; i++) {
+		double fitness = thisGeneration.at(i).getFitness();
+		// Most verbose but best readability and fastest runtime
 		if (fitness < 100) {
 			distributedNorms[0].incrementTally();
 		}
-		if (fitness < 200) {
+		else if (fitness < 200) {
 			distributedNorms[1].incrementTally();
 		}
-		if (fitness < 300) {
+		else if (fitness < 300) {
 			distributedNorms[2].incrementTally();
 		}
-		if (fitness < 400) {
+		else if (fitness < 400) {
 			distributedNorms[3].incrementTally();
 		}
-		if (fitness < 500) {
+		else if (fitness < 500) {
 			distributedNorms[4].incrementTally();
 		}
-		if (fitness < 600) {
+		else if (fitness < 600) {
 			distributedNorms[5].incrementTally();
 		}
-		if (fitness < 700) {
+		else if (fitness < 700) {
 			distributedNorms[6].incrementTally();
 		}
-		if (fitness < 800) {
+		else if (fitness < 800) {
 			distributedNorms[7].incrementTally();
 		}
-		if (fitness < 900) {
+		else if (fitness < 900) {
 			distributedNorms[8].incrementTally();
 		}
-		if (fitness < 1000) {
+		else if (fitness < 1000) {
 			distributedNorms[9].incrementTally();
 		}
 	}
@@ -81,15 +92,36 @@ deque<Norms> normalization(deque<Trunk> thisGeneration) {
 }
 
 
-//Breeding selection
+//Breeding process
 deque<Trunk> breedingSelection(deque<Trunk> thisGeneration) {
 	static const int pop = thisGeneration.size(); // Remove overhead of frequent size calls for loop
-
 	deque<Trunk> nextGeneration;
 	deque<Norms> normalizedTally = normalization(thisGeneration);
+	deque<pair<double, int>> test;
+	Trunk a, b;
+	double runningCounter;
+	for (int i = 0; i < normalizedTally.size(); i++){
+		if (normalizedTally[i].getTally() != 0) {
+			test.push_back(make_pair(normalizedTally[i].getWeight(), normalizedTally[i].getRange()));
+		}
+	}
+	double selected;
 	while (nextGeneration.size() < pop) {
 		srand(time(0));
-		
+		random_shuffle(thisGeneration.begin(), thisGeneration.end());
+		for (int i = 0; i < 2; i++) {
+			runningCounter = 0.0;
+			selected = (rand() / RAND_MAX); // Random float between 1 and zero
+			for (int j = 0; j < test.size(); j++) {
+				if (selected > runningCounter) {
+					runningCounter += test[j].second;
+				}
+				else {
+
+				}
+			}
+		}
+		crossover(a, b, nextGeneration);
 	}
 	return nextGeneration;
 }
@@ -169,11 +201,11 @@ int main() {
 			generatedTrunk.setFitness();
 			trunkList.push_back(generatedTrunk);
 		}
+		currentGenAvgFitness = averageFitnessCalculation(trunkList);
 		breedingSelection(trunkList);
 		while (noChangeCounter < 10) {
 			trunkList.clear();
 		}
-
 	}
 	return 0;
 }

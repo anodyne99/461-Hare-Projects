@@ -6,11 +6,14 @@
 class Trunk
 {
 private:
-	deque<Item> itemsPacked;
 	double fitness;
+	deque<Item> itemsPacked;
 	double totalWeight;
 public:
 	Trunk();
+	bool operator < (const Trunk& trunkObj) const {
+		return (fitness < trunkObj.fitness);
+	}
 	void overWeightCheck();
 	deque<Item> getItemsPacked(){
 		return this->itemsPacked;
