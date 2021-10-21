@@ -69,6 +69,14 @@ deque<Norms> normalization(deque<Trunk> thisGeneration) {
 			distributedNorms[9].incrementTally();
 		}
 	}
+	for (unsigned int i = 0; i < 10; i++) {
+		distributedNorms[i].squaredTally();
+		squaredSum = +distributedNorms[i].getTally();
+	}
+	for (unsigned int i = 0; i < 10; i++) {
+		double tally = distributedNorms[i].getTally();
+		distributedNorms[i].setWeight(tally / squaredSum);
+	}
 	return distributedNorms;
 }
 
@@ -76,10 +84,12 @@ deque<Norms> normalization(deque<Trunk> thisGeneration) {
 //Breeding selection
 deque<Trunk> breedingSelection(deque<Trunk> thisGeneration) {
 	static const int pop = thisGeneration.size(); // Remove overhead of frequent size calls for loop
+
 	deque<Trunk> nextGeneration;
 	deque<Norms> normalizedTally = normalization(thisGeneration);
 	while (nextGeneration.size() < pop) {
-
+		srand(time(0));
+		
 	}
 	return nextGeneration;
 }
