@@ -31,7 +31,7 @@ deque<Norms> normalization(deque<Trunk> thisGeneration) {
 	deque<Norms> distributedNorms;
 	int size = thisGeneration.size(); // Removes overhead of constant size calls;
 	double squaredSum = 0;
-	for (unsigned int i = 0; i <= 1000; i + 100) {
+	for (unsigned int i = 0; i <= 1000; (i + 100)) {
 		Norms newNorm;
 		newNorm.setRange(i);
 		distributedNorms.push_back(newNorm);
@@ -69,6 +69,7 @@ deque<Norms> normalization(deque<Trunk> thisGeneration) {
 			distributedNorms[9].incrementTally();
 		}
 	}
+	return distributedNorms;
 }
 
 
