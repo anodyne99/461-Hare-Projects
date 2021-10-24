@@ -7,31 +7,58 @@
 #include "Norms.h"
 
 
-int popSizes[4] = { 1000, 2000, 5000, 10000 };
 int maxPop;
-int noChangeCounter = 0;
 string inputFileName = "";
-double prevGenAvgFitness, currentGenAvgFitness;
+double prevGenAvgFitness = 0.0;
+double currentGenAvgFitness;
+double tenAgoFitness = 0.0;
+double fitnessChangeOverTenGens = 0.0;
 double maxFitness;
+bool changeFlag = false;
+double change;
 ifstream genes;
 ofstream results;
 deque<Item> fullItemList;
 deque<Trunk> trunkList;
 float mutationRate = (1 / 10000);
 
+bool changeChecker() {
+	if (fitnessChangeOverTenGens < 1 && fitnessChangeOverTenGens > -1) {
+		return true;
+	}
+}
 
 // Handles crossover process
-void crossover(Trunk a, Trunk b, deque<Trunk> nextGen) {
-
+void crossover(Trunk a, Trunk b, deque<Trunk> &nextGen) {
+	deque<Item> itemsA = a.getItemsPacked();
+	deque<Item> itemsB = b.getItemsPacked();
+	srand(time(0));
+	int crossoverIndex = (rand() % 400);
+	deque<Item> tempA, tempB; // Temp vectors for switching
+	for (int i = 0; i < crossoverIndex; i++) {
+		tempA.push_back(itemsA.at(i));
+		tempB.push_back(itemsB.at(i));
+	}
+	for (int i = crossoverIndex; i < 400; i++) {
+		tempA.push_back(itemsB.at(i));
+		tempB.push_back(itemsA.at(i));
+	}
+	a.setItemsPacked(tempA);
+	b.setItemsPacked(tempB);
+	nextGen.push_back(a);
+	nextGen.push_back(b);
+	cout << "crossover done! \n";
 }
 
 
+// Calculates the average fitness for the generation
 double averageFitnessCalculation(deque<Trunk> generated) {
 	int size = generated.size();
 	double totalTally = 0.0;
 	for (int i = 0; i < size; i++) {
 		totalTally += generated[i].getFitness();
 	}
+	cout << "Avg fit done \n";
 	return (totalTally / size);
 }
 
@@ -41,9 +68,10 @@ deque<Norms> normalization(deque<Trunk> thisGeneration) {
 	deque<Norms> distributedNorms;
 	int size = thisGeneration.size(); // Removes overhead of constant size calls;
 	double squaredSum = 0;
-	for (int i = 0; i <= 1000; (i + 100)) {
+	for (int i = 0; i <= 10; i++) {
+		int mult = ((i + 1) * 100);
 		Norms newNorm;
-		newNorm.setRange(i);
+		newNorm.setRange(mult);
 		distributedNorms.push_back(newNorm);
 	}
 	for (int i = 0; i < size; i++) {
@@ -82,13 +110,40 @@ deque<Norms> normalization(deque<Trunk> thisGeneration) {
 	}
 	for (unsigned int i = 0; i < 10; i++) {
 		distributedNorms[i].squaredTally();
-		squaredSum = +distributedNorms[i].getTally();
+		squaredSum += distributedNorms[i].getTally();
 	}
 	for (unsigned int i = 0; i < 10; i++) {
 		double tally = distributedNorms[i].getTally();
 		distributedNorms[i].setWeight(tally / squaredSum);
 	}
+	cout << "Distribution done! \n";
 	return distributedNorms;
+}
+
+
+// Finds where in the distribution the value selected is
+int findMaxValue(deque<pair<double, int>> dist) {
+	double runningCounter = dist[0].first;
+	srand(time(0));
+	double selected = ((double)rand() / (double)RAND_MAX); // Random float between 1 and zero
+	for (int j = 0; j < dist.size(); j++) {
+		if (selected > runningCounter) {
+			int tempIndex = j + 1;
+			runningCounter = (dist[tempIndex].first);
+		}
+		else {
+			return (j);
+		}
+	}
+}
+
+Trunk pickTrunk(deque<Trunk> list, int max, int min) {
+	for (int i = 0; i < list.size(); i++) {
+		if (list[i].getFitness() < max && list[i].getFitness() > min) {
+			return list[i];
+		}
+	}
+	cout << "Picktrunk done \n";
 }
 
 
@@ -97,52 +152,50 @@ deque<Trunk> breedingSelection(deque<Trunk> thisGeneration) {
 	static const int pop = thisGeneration.size(); // Remove overhead of frequent size calls for loop
 	deque<Trunk> nextGeneration;
 	deque<Norms> normalizedTally = normalization(thisGeneration);
-	deque<pair<double, int>> test;
+	deque<pair<double, int>> distribution;
+	int maxValueA, maxValueB;
 	Trunk a, b;
 	double runningCounter;
 	for (int i = 0; i < normalizedTally.size(); i++){
 		if (normalizedTally[i].getTally() != 0) {
-			test.push_back(make_pair(normalizedTally[i].getWeight(), normalizedTally[i].getRange()));
+			distribution.push_back(make_pair(normalizedTally[i].getWeight(), normalizedTally[i].getRange()));
 		}
 	}
+	// cycles through to create the full cdf values
+	for (int i = 1; i < distribution.size(); i++) {
+		int prev = (i - 1);
+		distribution[i].first += distribution[prev].first;
+	}
+	cout << "cdf done! \n";
 	double selected;
 	while (nextGeneration.size() < pop) {
 		srand(time(0));
-		random_shuffle(thisGeneration.begin(), thisGeneration.end());
-		for (int i = 0; i < 2; i++) {
-			runningCounter = 0.0;
-			selected = (rand() / RAND_MAX); // Random float between 1 and zero
-			for (int j = 0; j < test.size(); j++) {
-				if (selected > runningCounter) {
-					runningCounter += test[j].second;
-				}
-				else {
-
-				}
-			}
+		maxValueA = findMaxValue(distribution);
+		maxValueB = findMaxValue(distribution);
+		int lowerBoundA = 0;
+		int lowerBoundB = 0;
+		
+		if (maxValueA != 0) { // < 0 error handling
+			int prev = (maxValueA - 1);
+			lowerBoundA = distribution[(prev)].second;
 		}
+		if (maxValueB != 0) { // < 0 error handling
+			int prev = (maxValueB - 1);
+			lowerBoundB = distribution[(prev)].second;
+		}
+		a = pickTrunk(thisGeneration, distribution[maxValueA].second, lowerBoundA);
+		random_shuffle(thisGeneration.begin(), thisGeneration.end());
+		b = pickTrunk(thisGeneration, distribution[maxValueB].second, lowerBoundB);
 		crossover(a, b, nextGeneration);
+		cout << "Currently generated: " << nextGeneration.size() << "/1000 \n";
 	}
 	return nextGeneration;
 }
 
 
-//Function to output 4 generation results to a results file.
+//Function to output generation results to a results file.
 void resultsOutputToFile(ofstream &output, double max, double avg, int size) {
 
-}
-
-
-//Checker function to see if end loop conditions are being met
-//Should stop generating once the last 10 generations' average fitness
-//doesn't increase more than 1 percent
-void noChangeChecker(double prev, double curr) {
-	if (abs((curr - prev) / prev) < .01) {
-		noChangeCounter++;
-	}
-	else {
-		noChangeCounter = 0;
-	}
 }
 
 
@@ -150,7 +203,7 @@ void noChangeChecker(double prev, double curr) {
 deque<Item> initialPopulation(deque<Item> items) {
 	int successfulPack = 0; // to help with the occasional attempt to double-pack an item
 	int randomIndex;
-	while (successfulPack != 20) {
+	while (successfulPack != 40) {
 		randomIndex = (rand() % 400);
 		if (!items[randomIndex].getPacked()) {
 			items[randomIndex].setPacked();
@@ -171,6 +224,7 @@ deque<Item> itemListGeneration(ifstream &inputStream) {
 		itemList.push_back(generatedItem);
 	}
 	inputStream.close();
+	cout << "Item list generation done \n";
 	return itemList;
 }
 
@@ -190,22 +244,22 @@ int main() {
 		}
 	} while (genes.fail());
 	fullItemList = itemListGeneration(genes);
-	//Wasn't required but I felt like adding multiple trials.
-	for (int x = 0; x < 4; x++) {
+	cout << "Initial item population done! \n";
+	cout << "Enter the desired initial population size: \n";
+	maxPop = 100;
+	for (int i = 0; i < maxPop; i++) {
+		Trunk generatedTrunk;
+		generatedTrunk.setItemsPacked(initialPopulation(fullItemList));
+		generatedTrunk.setFitness();
+		trunkList.push_back(generatedTrunk);
+	}
+	cout << "Population creation done! \n";
+	while (!changeFlag) {
 		srand(unsigned(time(0))); //Random seeding changes with each trial
-		maxPop = popSizes[x];
-		for (int i = 0; i < maxPop; i++) {
-			// TODO: See if you can't find a way to encapsulate this into the population function
-			Trunk generatedTrunk;
-			generatedTrunk.setItemsPacked(initialPopulation(fullItemList));
-			generatedTrunk.setFitness();
-			trunkList.push_back(generatedTrunk);
-		}
 		currentGenAvgFitness = averageFitnessCalculation(trunkList);
-		breedingSelection(trunkList);
-		while (noChangeCounter < 10) {
-			trunkList.clear();
-		}
+		cout << "Current generation average fitness: " << currentGenAvgFitness << endl;
+		trunkList = breedingSelection(trunkList);
+		cout << "Next gen population done! \n";
 	}
 	return 0;
 }
