@@ -80,7 +80,6 @@ void crossover(Trunk a, Trunk b, deque<Trunk> &nextGen) {
 	b.setFitness();
 	nextGen.push_back(a);
 	nextGen.push_back(b);
-	cout << "crossover done! \n";
 	
 }
 
@@ -92,7 +91,6 @@ double averageFitnessCalculation(deque<Trunk> generated) {
 	for (int i = 0; i < size; i++) {
 		totalTally += generated[i].getFitness();
 	}
-	cout << "Avg fit done \n";
 	return (totalTally / size);
 }
 
@@ -122,7 +120,7 @@ deque<Norms> normalization(deque<Trunk> thisGeneration) {
 	}
 	for (int i = 0; i < size; i++) {
 		double fitness = thisGeneration.at(i).getFitness();
-		// Most verbose but best readability and fastest runtime
+		// Most verbose but best readability
 		if (fitness < 50) {
 			distributedNorms[0].incrementTally();
 		}
@@ -192,7 +190,6 @@ deque<Norms> normalization(deque<Trunk> thisGeneration) {
 		double tally = distributedNorms[i].getTally();
 		distributedNorms[i].setWeight(tally / squaredSum);
 	}
-	cout << "Distribution done! \n";
 	return distributedNorms;
 }
 
@@ -244,7 +241,6 @@ deque<Trunk> breedingSelection(deque<Trunk> thisGeneration) {
 		int prev = (i - 1);
 		distribution[i].first += distribution[prev].first;
 	}
-	cout << "cdf done! \n";
 	double selected;
 	while (nextGeneration.size() < pop) {
 		srand(unsigned(time(0)));
@@ -269,7 +265,6 @@ deque<Trunk> breedingSelection(deque<Trunk> thisGeneration) {
 	}
 	return nextGeneration;
 }
-
 
 //Function to output generation results to a results file.
 void resultsOutputToFile(ofstream &output, double max, double avg, int generation) {
@@ -325,24 +320,22 @@ int main() {
 		}
 	} while (genes.fail());
 	fullItemList = itemListGeneration(genes);
-	cout << "Initial item population done! \n";
-	maxPop = 100;
+	maxPop = 1000;
 	for (int i = 0; i < maxPop; i++) {
 		Trunk generatedTrunk;
 		generatedTrunk.setItemsPacked(initialPopulation(fullItemList));
 		generatedTrunk.setFitness();
 		trunkList.push_back(generatedTrunk);
 	}
-	cout << "Starting population creation done! \n";
 	int runningPopulationTally = 1;
+	cout << "This will take a bit. Go grab a coffee or something.\n";
+	cin.get(); // Little pause for readability
 	while (!changeFlag) {
 		double maxFitness;
 		srand(unsigned(time(0))); //Random seeding changes with each trial
 		currentGenAvgFitness = averageFitnessCalculation(trunkList);
 		cout << "Current generation average fitness: " << currentGenAvgFitness << endl;
 		maxFitness = findMaxFitness(trunkList);
-		cout << "Find max fitness done!";
-		cout << endl;
 		fitnessChange(currentGenAvgFitness, prevGenAvgFitness);
 		prevGenAvgFitness = currentGenAvgFitness;
 		trunkList = breedingSelection(trunkList);
