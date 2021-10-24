@@ -8,24 +8,35 @@
 
 
 int maxPop;
+int genTally;
 string inputFileName = "";
 double prevGenAvgFitness = 0.0;
 double currentGenAvgFitness;
 double tenAgoFitness = 0.0;
-double fitnessChangeOverTenGens = 0.0;
 double maxFitness;
+double fitnessChangeOverTenGens = 0.0;
 bool changeFlag = false;
 double change;
 ifstream genes;
 ofstream results;
 deque<Item> fullItemList;
 deque<Trunk> trunkList;
-float mutationRate = (1 / 10000);
 
-bool changeChecker() {
-	if (fitnessChangeOverTenGens < 1 && fitnessChangeOverTenGens > -1) {
+// Checks to make sure at least 1% change is happening each ten generations
+bool changeChecker(double tenAgoFitness, double fitChange) {
+	double onePercentChange = (abs(tenAgoFitness / 100));
+	if (fitChange < onePercentChange) {
 		return true;
 	}
+	else {
+		return false;
+	}
+}
+
+
+void fitnessChange(double currentGenFitness, double prevGenFitness) {
+	double changeOverGeneration = (currentGenAvgFitness - prevGenFitness);
+	fitnessChangeOverTenGens += changeOverGeneration;
 }
 
 // Handles crossover process
@@ -68,8 +79,8 @@ deque<Norms> normalization(deque<Trunk> thisGeneration) {
 	deque<Norms> distributedNorms;
 	int size = thisGeneration.size(); // Removes overhead of constant size calls;
 	double squaredSum = 0;
-	for (int i = 0; i <= 10; i++) {
-		int mult = ((i + 1) * 100);
+	for (int i = 0; i < 20; i++) {
+		int mult = ((i + 1) * 50);
 		Norms newNorm;
 		newNorm.setRange(mult);
 		distributedNorms.push_back(newNorm);
@@ -77,42 +88,72 @@ deque<Norms> normalization(deque<Trunk> thisGeneration) {
 	for (int i = 0; i < size; i++) {
 		double fitness = thisGeneration.at(i).getFitness();
 		// Most verbose but best readability and fastest runtime
-		if (fitness < 100) {
+		if (fitness < 50) {
 			distributedNorms[0].incrementTally();
 		}
-		else if (fitness < 200) {
+		else if (fitness < 100) {
 			distributedNorms[1].incrementTally();
 		}
-		else if (fitness < 300) {
+		else if (fitness < 150) {
 			distributedNorms[2].incrementTally();
 		}
-		else if (fitness < 400) {
+		else if (fitness < 200) {
 			distributedNorms[3].incrementTally();
 		}
-		else if (fitness < 500) {
+		else if (fitness < 250) {
 			distributedNorms[4].incrementTally();
 		}
-		else if (fitness < 600) {
+		else if (fitness < 300) {
 			distributedNorms[5].incrementTally();
 		}
-		else if (fitness < 700) {
+		else if (fitness < 350) {
 			distributedNorms[6].incrementTally();
 		}
-		else if (fitness < 800) {
+		else if (fitness < 400) {
 			distributedNorms[7].incrementTally();
 		}
-		else if (fitness < 900) {
+		else if (fitness < 450) {
 			distributedNorms[8].incrementTally();
 		}
-		else if (fitness < 1000) {
+		else if (fitness < 500) {
 			distributedNorms[9].incrementTally();
 		}
+		else if (fitness < 550) {
+			distributedNorms[10].incrementTally();
+		}
+		else if (fitness < 600) {
+			distributedNorms[11].incrementTally();
+		}
+		else if (fitness < 650) {
+			distributedNorms[12].incrementTally();
+		}
+		else if (fitness < 700) {
+			distributedNorms[13].incrementTally();
+		}
+		else if (fitness < 750) {
+			distributedNorms[14].incrementTally();
+		}
+		else if (fitness < 800) {
+			distributedNorms[15].incrementTally();
+		}
+		else if (fitness < 850) {
+			distributedNorms[16].incrementTally();
+		}
+		else if (fitness < 900) {
+			distributedNorms[17].incrementTally();
+		}
+		else if (fitness < 950) {
+			distributedNorms[18].incrementTally();
+		}
+		else if (fitness < 1000) {
+			distributedNorms[19].incrementTally();
+		}
 	}
-	for (unsigned int i = 0; i < 10; i++) {
+	for (unsigned int i = 0; i < 20; i++) {
 		distributedNorms[i].squaredTally();
 		squaredSum += distributedNorms[i].getTally();
 	}
-	for (unsigned int i = 0; i < 10; i++) {
+	for (unsigned int i = 0; i < 20; i++) {
 		double tally = distributedNorms[i].getTally();
 		distributedNorms[i].setWeight(tally / squaredSum);
 	}
@@ -137,14 +178,15 @@ int findMaxValue(deque<pair<double, int>> dist) {
 	}
 }
 
+// Picks the trunks that match the range for breeding
 Trunk pickTrunk(deque<Trunk> list, int max, int min) {
-	for (int i = 0; i < list.size(); i++) {
-		int randomIndex = (rand() % 400);
+	int size = list.size();
+	while (true) {
+		int randomIndex = (rand() % size);
 		if (list[randomIndex].getFitness() < max && list[randomIndex].getFitness() > min) {
 			return list[randomIndex];
 		}
 	}
-	cout << "Picktrunk done \n";
 }
 
 
@@ -225,7 +267,7 @@ deque<Item> itemListGeneration(ifstream &inputStream) {
 		itemList.push_back(generatedItem);
 	}
 	inputStream.close();
-	cout << "Item list generation done \n";
+	cout << "Read complete!\n";
 	return itemList;
 }
 
@@ -246,8 +288,7 @@ int main() {
 	} while (genes.fail());
 	fullItemList = itemListGeneration(genes);
 	cout << "Initial item population done! \n";
-	cout << "Enter the desired initial population size: \n";
-	maxPop = 1000;
+	maxPop = 100;
 	for (int i = 0; i < maxPop; i++) {
 		Trunk generatedTrunk;
 		generatedTrunk.setItemsPacked(initialPopulation(fullItemList));
@@ -256,11 +297,28 @@ int main() {
 	}
 	cout << "Population creation done! \n";
 	while (!changeFlag) {
+		int runningPopulationTally = 1;
 		srand(unsigned(time(0))); //Random seeding changes with each trial
+		int magicMutationNumber = 4;
 		currentGenAvgFitness = averageFitnessCalculation(trunkList);
 		cout << "Current generation average fitness: " << currentGenAvgFitness << endl;
+		cout << endl;
+		fitnessChange(currentGenAvgFitness, prevGenAvgFitness);
+		prevGenAvgFitness = currentGenAvgFitness;
 		trunkList = breedingSelection(trunkList);
-		cout << "Next gen population done! \n";
+		if ((rand() % 10000) == 4) {
+			cout << "Mutation trigger!\n";
+
+		}
+		cout << "Generation " << runningPopulationTally << " breeding done!\n";
+		genTally++;
+		if (genTally == 10) {
+			changeFlag = changeChecker(tenAgoFitness, fitnessChangeOverTenGens);
+			genTally = 0;
+			tenAgoFitness = currentGenAvgFitness;
+			fitnessChangeOverTenGens = 0.0;
+		}
+		runningPopulationTally++;
 	}
 	return 0;
 }
