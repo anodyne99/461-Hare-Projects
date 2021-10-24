@@ -13,12 +13,10 @@ string inputFileName = "";
 double prevGenAvgFitness = 0.0;
 double currentGenAvgFitness;
 double tenAgoFitness = 0.0;
-double maxFitness;
 double fitnessChangeOverTenGens = 0.0;
 bool changeFlag = false;
-double change;
 ifstream genes;
-ofstream results;
+ofstream results ("results.txt");
 deque<Item> fullItemList;
 deque<Trunk> trunkList;
 
@@ -33,10 +31,28 @@ bool changeChecker(double tenAgoFitness, double fitChange) {
 	}
 }
 
-
+// Calculates fitness change each generation over ten generations
 void fitnessChange(double currentGenFitness, double prevGenFitness) {
 	double changeOverGeneration = (currentGenAvgFitness - prevGenFitness);
 	fitnessChangeOverTenGens += changeOverGeneration;
+}
+
+// Handles the off chance process of mutation
+void mutationHandler(Trunk &a, Trunk &b) {
+	deque<Item> itemsA = a.getItemsPacked();
+	deque<Item> itemsB = b.getItemsPacked();
+	int randIndex = (rand() % 400);
+	int coinFlip = (rand() % 2);
+	if (coinFlip == 0) {
+		itemsA[randIndex].setMutation();
+		a.setItemsPacked(itemsA);
+		a.setFitness();
+	}
+	else {
+		itemsB[randIndex].setMutation();
+		b.setItemsPacked(itemsB);
+		b.setFitness();
+	}
 }
 
 // Handles crossover process
@@ -56,9 +72,16 @@ void crossover(Trunk a, Trunk b, deque<Trunk> &nextGen) {
 	}
 	a.setItemsPacked(tempA);
 	b.setItemsPacked(tempB);
+	if ((rand() % 10000) == 4) {
+		cout << "Mutation triggered!\n";
+		mutationHandler(a, b);
+	}
+	a.setFitness();
+	b.setFitness();
 	nextGen.push_back(a);
 	nextGen.push_back(b);
 	cout << "crossover done! \n";
+	
 }
 
 
@@ -71,6 +94,18 @@ double averageFitnessCalculation(deque<Trunk> generated) {
 	}
 	cout << "Avg fit done \n";
 	return (totalTally / size);
+}
+
+
+// Finds the maximum fitness in a generation
+double findMaxFitness(deque<Trunk> list) {
+	double max = 0.0;
+	for (int i = 0; i < list.size(); i++) {
+		if (list[i].getFitness() > max) {
+			max = list[i].getFitness();
+		}
+	}
+	return max;
 }
 
 
@@ -237,8 +272,11 @@ deque<Trunk> breedingSelection(deque<Trunk> thisGeneration) {
 
 
 //Function to output generation results to a results file.
-void resultsOutputToFile(ofstream &output, double max, double avg, int size) {
-
+void resultsOutputToFile(ofstream &output, double max, double avg, int generation) {
+	results << "Generation " << generation << " results: \n";
+	results << "Average fitness: " << avg << endl;
+	results << "Maximum fitness: " << max << endl;
+	results << endl;
 }
 
 
@@ -295,21 +333,19 @@ int main() {
 		generatedTrunk.setFitness();
 		trunkList.push_back(generatedTrunk);
 	}
-	cout << "Population creation done! \n";
+	cout << "Starting population creation done! \n";
+	int runningPopulationTally = 1;
 	while (!changeFlag) {
-		int runningPopulationTally = 1;
+		double maxFitness;
 		srand(unsigned(time(0))); //Random seeding changes with each trial
-		int magicMutationNumber = 4;
 		currentGenAvgFitness = averageFitnessCalculation(trunkList);
 		cout << "Current generation average fitness: " << currentGenAvgFitness << endl;
+		maxFitness = findMaxFitness(trunkList);
+		cout << "Find max fitness done!";
 		cout << endl;
 		fitnessChange(currentGenAvgFitness, prevGenAvgFitness);
 		prevGenAvgFitness = currentGenAvgFitness;
 		trunkList = breedingSelection(trunkList);
-		if ((rand() % 10000) == 4) {
-			cout << "Mutation trigger!\n";
-
-		}
 		cout << "Generation " << runningPopulationTally << " breeding done!\n";
 		genTally++;
 		if (genTally == 10) {
@@ -318,7 +354,10 @@ int main() {
 			tenAgoFitness = currentGenAvgFitness;
 			fitnessChangeOverTenGens = 0.0;
 		}
+		resultsOutputToFile(results, maxFitness, currentGenAvgFitness, runningPopulationTally);
 		runningPopulationTally++;
 	}
+	cout << "Outputting final results to results.txt\n";
+	results.close();
 	return 0;
 }

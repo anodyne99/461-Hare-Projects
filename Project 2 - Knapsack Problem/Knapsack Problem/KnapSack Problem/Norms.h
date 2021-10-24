@@ -4,7 +4,7 @@ class Norms
 {
 private:
 	int tally = 0;
-	int range;
+	int range = 0;
 	double weight = 0.0;
 public:
 	void incrementTally() {
