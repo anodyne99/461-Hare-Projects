@@ -139,8 +139,9 @@ int findMaxValue(deque<pair<double, int>> dist) {
 
 Trunk pickTrunk(deque<Trunk> list, int max, int min) {
 	for (int i = 0; i < list.size(); i++) {
-		if (list[i].getFitness() < max && list[i].getFitness() > min) {
-			return list[i];
+		int randomIndex = (rand() % 400);
+		if (list[randomIndex].getFitness() < max && list[randomIndex].getFitness() > min) {
+			return list[randomIndex];
 		}
 	}
 	cout << "Picktrunk done \n";
@@ -169,7 +170,7 @@ deque<Trunk> breedingSelection(deque<Trunk> thisGeneration) {
 	cout << "cdf done! \n";
 	double selected;
 	while (nextGeneration.size() < pop) {
-		srand(time(0));
+		srand(unsigned(time(0)));
 		maxValueA = findMaxValue(distribution);
 		maxValueB = findMaxValue(distribution);
 		int lowerBoundA = 0;
@@ -184,7 +185,7 @@ deque<Trunk> breedingSelection(deque<Trunk> thisGeneration) {
 			lowerBoundB = distribution[(prev)].second;
 		}
 		a = pickTrunk(thisGeneration, distribution[maxValueA].second, lowerBoundA);
-		random_shuffle(thisGeneration.begin(), thisGeneration.end());
+		// random_shuffle(thisGeneration.begin(), thisGeneration.end());
 		b = pickTrunk(thisGeneration, distribution[maxValueB].second, lowerBoundB);
 		crossover(a, b, nextGeneration);
 		cout << "Currently generated: " << nextGeneration.size() << "/1000 \n";
@@ -246,7 +247,7 @@ int main() {
 	fullItemList = itemListGeneration(genes);
 	cout << "Initial item population done! \n";
 	cout << "Enter the desired initial population size: \n";
-	maxPop = 100;
+	maxPop = 1000;
 	for (int i = 0; i < maxPop; i++) {
 		Trunk generatedTrunk;
 		generatedTrunk.setItemsPacked(initialPopulation(fullItemList));
