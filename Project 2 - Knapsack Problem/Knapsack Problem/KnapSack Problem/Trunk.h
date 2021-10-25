@@ -11,9 +11,6 @@ private:
 	double totalWeight;
 public:
 	Trunk();
-	bool operator < (const Trunk& trunkObj) const {
-		return (fitness < trunkObj.fitness);
-	}
 	void overWeightCheck();
 	deque<Item> getItemsPacked(){
 		return this->itemsPacked;
@@ -21,7 +18,7 @@ public:
 	void setItemsPacked(deque<Item> items) {
 		itemsPacked = items;
 	}
-	void setWeight(deque<Item> items);
+	void setWeight();
 	double getWeight() {
 		return this->totalWeight;
 	}

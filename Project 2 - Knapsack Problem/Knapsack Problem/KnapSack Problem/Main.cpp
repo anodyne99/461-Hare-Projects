@@ -47,11 +47,13 @@ void mutationHandler(Trunk &a, Trunk &b) {
 		itemsA[randIndex].setMutation();
 		a.setItemsPacked(itemsA);
 		a.setFitness();
+		a.setWeight();
 	}
 	else {
 		itemsB[randIndex].setMutation();
 		b.setItemsPacked(itemsB);
 		b.setFitness();
+		b.setWeight();
 	}
 }
 
@@ -59,7 +61,7 @@ void mutationHandler(Trunk &a, Trunk &b) {
 void crossover(Trunk a, Trunk b, deque<Trunk> &nextGen) {
 	deque<Item> itemsA = a.getItemsPacked();
 	deque<Item> itemsB = b.getItemsPacked();
-	srand(time(0));
+	srand(unsigned(time(0)));
 	int crossoverIndex = (rand() % 400);
 	deque<Item> tempA, tempB; // Temp vectors for switching
 	for (int i = 0; i < crossoverIndex; i++) {
@@ -78,9 +80,12 @@ void crossover(Trunk a, Trunk b, deque<Trunk> &nextGen) {
 	}
 	a.setFitness();
 	b.setFitness();
+	a.setWeight();
+	b.setWeight();
+	a.overWeightCheck();
+	b.overWeightCheck();
 	nextGen.push_back(a);
 	nextGen.push_back(b);
-	
 }
 
 
@@ -197,7 +202,7 @@ deque<Norms> normalization(deque<Trunk> thisGeneration) {
 // Finds where in the distribution the value selected is
 int findMaxValue(deque<pair<double, int>> dist) {
 	double runningCounter = dist[0].first;
-	srand(time(0));
+	srand(unsigned(time(0)));
 	double selected = ((double)rand() / (double)RAND_MAX); // Random float between 1 and zero
 	for (int j = 0; j < dist.size(); j++) {
 		if (selected > runningCounter) {
@@ -230,7 +235,6 @@ deque<Trunk> breedingSelection(deque<Trunk> thisGeneration) {
 	deque<pair<double, int>> distribution;
 	int maxValueA, maxValueB;
 	Trunk a, b;
-	double runningCounter;
 	for (int i = 0; i < normalizedTally.size(); i++){
 		if (normalizedTally[i].getTally() != 0) {
 			distribution.push_back(make_pair(normalizedTally[i].getWeight(), normalizedTally[i].getRange()));
@@ -241,7 +245,6 @@ deque<Trunk> breedingSelection(deque<Trunk> thisGeneration) {
 		int prev = (i - 1);
 		distribution[i].first += distribution[prev].first;
 	}
-	double selected;
 	while (nextGeneration.size() < pop) {
 		srand(unsigned(time(0)));
 		maxValueA = findMaxValue(distribution);
@@ -275,7 +278,7 @@ void resultsOutputToFile(ofstream &output, double max, double avg, int generatio
 }
 
 
-//initial population creation for each test
+//initial population creation test
 deque<Item> initialPopulation(deque<Item> items) {
 	int successfulPack = 0; // to help with the occasional attempt to double-pack an item
 	int randomIndex;
@@ -325,6 +328,7 @@ int main() {
 		Trunk generatedTrunk;
 		generatedTrunk.setItemsPacked(initialPopulation(fullItemList));
 		generatedTrunk.setFitness();
+		generatedTrunk.setWeight();
 		trunkList.push_back(generatedTrunk);
 	}
 	int runningPopulationTally = 1;
@@ -350,6 +354,8 @@ int main() {
 		resultsOutputToFile(results, maxFitness, currentGenAvgFitness, runningPopulationTally);
 		runningPopulationTally++;
 	}
+	cout << "Change stagnating. \n";
+	cin.get();
 	cout << "Outputting final results to results.txt\n";
 	results.close();
 	return 0;

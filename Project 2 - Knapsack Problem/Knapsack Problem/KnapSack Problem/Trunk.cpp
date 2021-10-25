@@ -17,10 +17,13 @@ void Trunk::setFitness() {
 	this->fitness = totalFitness;
 };
 
-void Trunk::setWeight(deque<Item> items) {
+void Trunk::setWeight() {
 	double totWeight = 0.0;
+	deque<Item> items = this->itemsPacked;
 	for (int i = 0; i < items.size(); i++) {
-		totWeight += items.at(i).getItemWeight();
+		if (items[i].getPacked()) {
+			totWeight += items.at(i).getItemWeight();
+		}
 	}
 	this->totalWeight = totWeight;
 };
