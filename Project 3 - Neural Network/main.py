@@ -145,4 +145,4 @@ print()
 # For outputting the model into a base flowchart png
 # Warning: Running this is finicky. Requires installing a couple special packages outside of the virtual environment:
 # Install Graphviz and Pydot to see this
-tf.keras.utils.plot_model(model, "test_model.png", show_shapes=True)
+#tf.keras.utils.plot_model(model, "test_model.png", show_shapes=True)
