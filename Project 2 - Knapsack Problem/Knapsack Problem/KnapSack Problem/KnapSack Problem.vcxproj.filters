@@ -27,6 +27,9 @@
     <ClInclude Include="Norms.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\source\repos\KnapsackProblemRework\KnapsackProblemRework\ProgressBar.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">

@@ -1,10 +1,11 @@
-// James Helm
+﻿// James Helm
 // Fall 2021
 // Project 2 - Knapsack Problem
 
 #include "Main.h"
 #include "Trunk.h"
 #include "Norms.h"
+#include "ProgressBar.hpp"
 
 
 int maxPop;
@@ -229,7 +230,13 @@ Trunk pickTrunk(deque<Trunk> list, int max, int min) {
 
 //Breeding process
 deque<Trunk> breedingSelection(deque<Trunk> thisGeneration) {
-	static const int pop = thisGeneration.size(); // Remove overhead of frequent size calls for loop
+	static const int pop = thisGeneration.size();// Remove overhead of frequent size calls for loop
+	static const int total = pop / 2;
+	progressbar progressBar(total);
+	progressBar.set_todo_char(" ");
+	progressBar.set_done_char("#");
+	progressBar.set_opening_bracket_char("{");
+	progressBar.set_closing_bracket_char("}");
 	deque<Trunk> nextGeneration;
 	deque<Norms> normalizedTally = normalization(thisGeneration);
 	deque<pair<double, int>> distribution;
@@ -261,10 +268,9 @@ deque<Trunk> breedingSelection(deque<Trunk> thisGeneration) {
 			lowerBoundB = distribution[(prev)].second;
 		}
 		a = pickTrunk(thisGeneration, distribution[maxValueA].second, lowerBoundA);
-		// random_shuffle(thisGeneration.begin(), thisGeneration.end());
 		b = pickTrunk(thisGeneration, distribution[maxValueB].second, lowerBoundB);
 		crossover(a, b, nextGeneration);
-		cout << "Currently generated: " << nextGeneration.size() << "/1000 \n";
+		progressBar.update();
 	}
 	return nextGeneration;
 }
